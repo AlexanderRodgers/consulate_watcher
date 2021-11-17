@@ -5,6 +5,9 @@ const cron = require("node-cron");
 
 let prev = null;
 let curr = null;
+let err = null;
+let prevErr = null;
+let ranErrMailer = false;
 
 const consulateDecember =
   "https://app.bookitit.com/onlinebookings/datetime/?callback=jQuery21104033592750694892_1637092123650&type=default&publickey=275f65e80ce06aaf5cd24cebd11311897&lang=en&services%5B%5D=bkt276859&agendas%5B%5D=bkt128898&version=12&src=https%3A%2F%2Fapp.bookitit.com%2Fen%2Fhosteds%2Fwidgetdefault%2F275f65e80ce06aaf5cd24cebd11311897&srvsrc=https%3A%2F%2Fapp.bookitit.com&start=2021-12-01&end=2021-12-30&selectedPeople=1&_=1637092123654";
@@ -78,7 +81,7 @@ const mailTimes = async () => {
   const times = await findTimes();
   let text = "Available Times:\n";
   if (!times.length) {
-    return;
+    return [[], null];
   }
   const availDate = times[0]["date"];
   const subjectStr = `New Consulate Appointment: ${availDate}`;
@@ -124,15 +127,28 @@ cron.schedule("0-59 * * * *", () => {
   let options = null;
   (async () => {
     console.log(`Checking Appointments: ${prettyDate()}`);
+    try {
   [curr, options] = await mailTimes();
-    if (curr !== null && !areTheSame(prev, curr)) {
+    if (typeof curr !== 'undefined' && curr != null && !areTheSame(prev, curr)) {
       mailer.sendMail(options);
     } 
     prev = [...curr];
+    } catch (e) {
+      err = e;
+      if (!ranErrMailer) {
+        mailer.sendMail({
+          subject: 'Consulate Mailer has broken',
+          text: e.toString()
+        });
+      }
+      prevErr = e;
+      ranErrMailer = true;
+    }
   })();
 });
 
-cron.schedule("0 */2 * * *", () => {
+cron.schedule("0 */4 * * *", () => {
+  console.log('Mailer is running!');
   mailTimes({
     subject: "Still running.",
     text: "Verifying that the process is still running",
