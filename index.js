@@ -1,7 +1,10 @@
 const mailer = require("./mailer");
 const axios = require("axios");
 const fs = require("fs");
-const cron = require('node-cron');
+const cron = require("node-cron");
+
+let prev = null;
+let curr = null;
 
 const consulateDecember =
   "https://app.bookitit.com/onlinebookings/datetime/?callback=jQuery21104033592750694892_1637092123650&type=default&publickey=275f65e80ce06aaf5cd24cebd11311897&lang=en&services%5B%5D=bkt276859&agendas%5B%5D=bkt128898&version=12&src=https%3A%2F%2Fapp.bookitit.com%2Fen%2Fhosteds%2Fwidgetdefault%2F275f65e80ce06aaf5cd24cebd11311897&srvsrc=https%3A%2F%2Fapp.bookitit.com&start=2021-12-01&end=2021-12-30&selectedPeople=1&_=1637092123654";
@@ -40,6 +43,13 @@ const createDateString = (dateStr) => {
   return new Date(dateStr).toLocaleDateString("en-US", options);
 };
 
+const calculateTime = (time) => {
+  const timeInt = parseInt(time);
+  const hour = Math.floor(timeInt / 60);
+  const minutes = timeInt % 60;
+  return `${hour}:${minutes}`;
+};
+
 const findTimes = async () => {
   let times = await getAvailableTimes();
   const availableDates = [];
@@ -52,12 +62,11 @@ const findTimes = async () => {
         times: [],
       };
       for (const [time, idk] of Object.entries(availableTimes)) {
-        newDate["times"].push(time);
+        newDate["times"].push(calculateTime(time));
       }
       availableDates.push(newDate);
     }
   });
-  console.log(availableDates);
   return availableDates;
 };
 
@@ -83,25 +92,55 @@ const mailTimes = async () => {
     text += "\n";
   }
   options.text = text;
-  mailer.sendMail(options);
   return times;
 };
 
-cron.schedule('1-59 * * * *', () => {
-  console.log('Running!');
-  mailTimes();
-})
+const prettyDate = () => {
+  var date = new Date();
+  var localeSpecificTime = date.toLocaleTimeString();
+  return localeSpecificTime.replace(/:\d+ /, " ");
+};
 
-cron.schedule('* */2 * * *', () => {
+const areTheSame = (p, c) => {
+  // A comparer used to determine if two entries are equal.
+  console.log(p);
+  console.log(c);
+  const sameTimes = (a, b) => a.date === b.date;
+
+  // Get items that only occur in the left array,
+  // using the compareFunction to determine equality.
+  const onlyInLeft = (left, right, compareFunction) =>
+    left?.filter(
+      (leftValue) =>
+        !right?.some((rightValue) => compareFunction(leftValue, rightValue))
+    );
+
+  const prevDiff = onlyInLeft(p, c, sameTimes);
+  if (prevDiff?.length) return false;
+  const currDiff = onlyInLeft(c, p, sameTimes);
+  if (currDiff?.length) return false;
+  return true;
+};
+
+cron.schedule("0-59 * * * *", () => {
+  (async () => {
+    console.log(`Checking Appointments: ${prettyDate()}`);
+    curr = await mailTimes();
+    if (curr !== null && !areTheSame(prev, curr)) {
+      mailer.sendMail(options);
+    } 
+    prev = [...curr];
+  })();
+});
+
+cron.schedule("0 */2 * * *", () => {
   mailTimes({
-    subject: 'Still running.',
-    text: 'Verifying that the process is still running'
+    subject: "Still running.",
+    text: "Verifying that the process is still running",
   });
 });
 
-mailer.sendMail({
-  subject: 'Scheduler has started',
-  text: `Process started at: ${new Date()}`
-});
-
-console.log('running!\n');
+// mailer.sendMail({
+//   subject: 'Scheduler has started',
+//   text: `Process started at: ${new Date()}`
+// });
