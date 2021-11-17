@@ -84,13 +84,24 @@ const mailTimes = async () => {
   }
   options.text = text;
   mailer.sendMail(options);
+  return times;
 };
 
-cron.schedule('* 1 * * * ', () => {
+cron.schedule('1-59 * * * *', () => {
+  console.log('Running!');
   mailTimes();
 })
+
+cron.schedule('* */2 * * *', () => {
+  mailTimes({
+    subject: 'Still running.',
+    text: 'Verifying that the process is still running'
+  });
+});
 
 mailer.sendMail({
   subject: 'Scheduler has started',
   text: `Process started at: ${new Date()}`
 });
+
+console.log('running!\n');
