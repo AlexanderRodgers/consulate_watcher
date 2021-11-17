@@ -1,6 +1,7 @@
 const mailer = require("./mailer");
 const axios = require("axios");
 const fs = require("fs");
+const cron = require('node-cron');
 
 const consulateDecember =
   "https://app.bookitit.com/onlinebookings/datetime/?callback=jQuery21104033592750694892_1637092123650&type=default&publickey=275f65e80ce06aaf5cd24cebd11311897&lang=en&services%5B%5D=bkt276859&agendas%5B%5D=bkt128898&version=12&src=https%3A%2F%2Fapp.bookitit.com%2Fen%2Fhosteds%2Fwidgetdefault%2F275f65e80ce06aaf5cd24cebd11311897&srvsrc=https%3A%2F%2Fapp.bookitit.com&start=2021-12-01&end=2021-12-30&selectedPeople=1&_=1637092123654";
@@ -85,4 +86,11 @@ const mailTimes = async () => {
   mailer.sendMail(options);
 };
 
-mailTimes();
+cron.schedule('* 1 * * * ', () => {
+  mailTimes();
+})
+
+mailer.sendMail({
+  subject: 'Scheduler has started',
+  text: `Process started at: ${new Date()}`
+});

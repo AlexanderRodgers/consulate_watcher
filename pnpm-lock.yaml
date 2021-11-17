@@ -3,11 +3,13 @@ lockfileVersion: 5.3
 specifiers:
   axios: ^0.24.0
   dotenv: ^10.0.0
+  node-cron: ^3.0.0
   nodemailer: ^6.7.1
 
 dependencies:
   axios: 0.24.0
   dotenv: 10.0.0
+  node-cron: 3.0.0
   nodemailer: 6.7.1
 
 packages:
@@ -33,6 +35,23 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dev: false
+
+  /moment-timezone/0.5.34:
+    resolution: {integrity: sha512-3zAEHh2hKUs3EXLESx/wsgw6IQdusOT8Bxm3D9UrHPQR7zlMmzwybC8zHEM1tQ4LJwP7fcxrWr8tuBg05fFCbg==}
+    dependencies:
+      moment: 2.29.1
+    dev: false
+
+  /moment/2.29.1:
+    resolution: {integrity: sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==}
+    dev: false
+
+  /node-cron/3.0.0:
+    resolution: {integrity: sha512-DDwIvvuCwrNiaU7HEivFDULcaQualDv7KoNlB/UU1wPW0n1tDEmBJKhEIE6DlF2FuoOHcNbLJ8ITL2Iv/3AWmA==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      moment-timezone: 0.5.34
     dev: false
 
   /nodemailer/6.7.1:
