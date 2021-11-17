@@ -81,7 +81,7 @@ const mailTimes = async () => {
   const times = await findTimes();
   let text = "Available Times:\n";
   if (!times.length) {
-    return [[], null];
+    return [[], options];
   }
   const availDate = times[0]["date"];
   const subjectStr = `New Consulate Appointment: ${availDate}`;
@@ -105,6 +105,7 @@ const prettyDate = () => {
 };
 
 const areTheSame = (p, c) => {
+  if (p === null || c === null) return true;
   // A comparer used to determine if two entries are equal.
   const sameTimes = (a, b) => a.date === b.date;
 
@@ -129,7 +130,7 @@ cron.schedule("0-59 * * * *", () => {
     console.log(`Checking Appointments: ${prettyDate()}`);
     try {
   [curr, options] = await mailTimes();
-    if (typeof curr !== 'undefined' && curr != null && !areTheSame(prev, curr)) {
+    if (curr.length && !areTheSame(prev, curr)) {
       mailer.sendMail(options);
     } 
     prev = [...curr];
@@ -149,7 +150,7 @@ cron.schedule("0-59 * * * *", () => {
 
 cron.schedule("0 */4 * * *", () => {
   console.log('Mailer is running!');
-  mailTimes({
+  mailer.sendMail({
     subject: "Still running.",
     text: "Verifying that the process is still running",
   });
