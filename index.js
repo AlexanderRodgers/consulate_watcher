@@ -92,7 +92,7 @@ const mailTimes = async () => {
     text += "\n";
   }
   options.text = text;
-  return times;
+  return [times, options];
 };
 
 const prettyDate = () => {
@@ -103,8 +103,6 @@ const prettyDate = () => {
 
 const areTheSame = (p, c) => {
   // A comparer used to determine if two entries are equal.
-  console.log(p);
-  console.log(c);
   const sameTimes = (a, b) => a.date === b.date;
 
   // Get items that only occur in the left array,
@@ -123,9 +121,10 @@ const areTheSame = (p, c) => {
 };
 
 cron.schedule("0-59 * * * *", () => {
+  let options = null;
   (async () => {
     console.log(`Checking Appointments: ${prettyDate()}`);
-    curr = await mailTimes();
+  [curr, options] = await mailTimes();
     if (curr !== null && !areTheSame(prev, curr)) {
       mailer.sendMail(options);
     } 
@@ -140,7 +139,7 @@ cron.schedule("0 */2 * * *", () => {
   });
 });
 
-// mailer.sendMail({
-//   subject: 'Scheduler has started',
-//   text: `Process started at: ${new Date()}`
-// });
+mailer.sendMail({
+  subject: 'Scheduler has started',
+  text: `Process started at: ${new Date()}`
+});
