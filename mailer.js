@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const emails = ["alexedrodgers@gmail.com", "aerodger@calpoly.edu"];
+const emails = ["alexedrodgers@gmail.com", "sagemgrothee@gmail.com", "arellanolilly7702@gmail.com"];
 
 const isObjectEmpty = (obj) => {
   return obj && Object.keys(obj).length !== 0;

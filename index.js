@@ -108,6 +108,7 @@ const prettyDate = () => {
 
 const areTheSame = (p, c) => {
   if (c === null) return true;
+  if (c !== null && p === null) return false;
   // A comparer used to determine if two entries are equal.
   const sameTimes = (a, b) => a.date === b.date;
 
@@ -150,15 +151,15 @@ cron.schedule("0-59 * * * *", () => {
   })();
 });
 
-cron.schedule("0 8,20 * * *", () => {
-  console.log('Mailer is running!');
-  mailer.sendMail({
-    subject: "I'm still looking out for you!",
-    text: "Hi, I'm just notifying you that I'm still looking for appointments for you. Make sure that you receive 2 emails a day because I might break and stop checking without notifying you. Contact alexedrodgers@gmail.com if you want to stop receiving emails. Thanks!",
-  });
-});
+// cron.schedule("0 8,20 * * *", () => {
+//   console.log('Mailer is running!');
+//   mailer.sendMail({
+//     subject: "I'm still looking out for you!",
+//     text: "Hi, I'm just notifying you that I'm still looking for appointments for you. Make sure that you receive 2 emails a day because I might break and stop checking without notifying you. Contact alexedrodgers@gmail.com if you want to stop receiving emails. Thanks!",
+//   });
+// });
 
-mailer.sendMail({
-  subject: 'Consulate Watcher has started.',
-  text: `You've been added to the consulate watcher list. Process started at: ${new Date()}.`
-});
+// mailer.sendMail({
+//   subject: 'Consulate Watcher has started.',
+//   text: `You've been added to the consulate watcher list. Process started at: ${new Date()}.`
+// });
