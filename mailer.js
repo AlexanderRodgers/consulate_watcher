@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
-const emails = ["alexedrodgers@gmail.com", "sagemgrothee@gmail.com", "arellanolilly7702@gmail.com"];
+// const emails = ["alexedrodgers@gmail.com", "sagemgrothee@gmail.com", "arellanolilly7702@gmail.com"];
+const emails = ["alexedrodgers@gmail.com", "aerodger@calpoly.edu", "alex.e.rodgers@gmail.com"];
 
 const isObjectEmpty = (obj) => {
   return obj && Object.keys(obj).length !== 0;
@@ -22,16 +23,14 @@ exports.sendMail = (options) => {
     };
   } else {
     options.from = "spainconsulatewatcher@outlook.com";
+    options.to = emails;
   }
 
-  for (let email of emails) {
-    options.to = email;
-    transporter.sendMail(options, (err, info) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log(info.response);
-    });
-  }
+  transporter.sendMail(options, (err, info) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log(info.response);
+  });
 };
