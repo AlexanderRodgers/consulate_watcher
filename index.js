@@ -49,8 +49,9 @@ const createDateString = (dateStr) => {
 const calculateTime = (time) => {
   const timeInt = parseInt(time);
   const hour = Math.floor(timeInt / 60);
-  const minutes = timeInt % 60;
-  return `${hour}:${minutes}`;
+  let minutes = timeInt % 60;
+  let minuteString = minutes === 0 ? `${minutes}` + `0` : `${minutes}`;
+  return `${hour}:${minuteString}`;
 };
 
 const findTimes = async () => {
@@ -76,10 +77,10 @@ const findTimes = async () => {
 const mailTimes = async () => {
   const options = {
     subject: "",
-    text: "",
+    html: "",
   };
   const times = await findTimes();
-  let text = "Available Times:\n";
+  let html = "<html><h2>New Consulate Appointment: </h2>";
   if (!times.length) {
     return [[], options];
   }
@@ -88,13 +89,14 @@ const mailTimes = async () => {
   options.subject = subjectStr;
 
   for (let time of times) {
-    text += `Date: ${time["date"]}\n`;
+    html += `<p><b> Date: ${time["date"]}</b></br>`;
     for (let hour of time["times"]) {
-      text += `${hour}\n`;
+      html += `${hour}</br>`;
     }
-    text += "\n";
+    html += "</p>";
+    html += "<a href=\"https://app.bookitit.com/en/hosteds/widgetdefault/275f65e80ce06aaf5cd24cebd11311897#services\">Click here to visit the consulate website</a></html>";
   }
-  options.text = text;
+  options.html = html;
   return [times, options];
 };
 
@@ -105,7 +107,7 @@ const prettyDate = () => {
 };
 
 const areTheSame = (p, c) => {
-  if (p === null || c === null) return true;
+  if (c === null) return true;
   // A comparer used to determine if two entries are equal.
   const sameTimes = (a, b) => a.date === b.date;
 
@@ -148,15 +150,15 @@ cron.schedule("0-59 * * * *", () => {
   })();
 });
 
-cron.schedule("0 */4 * * *", () => {
+cron.schedule("0 8,20 * * *", () => {
   console.log('Mailer is running!');
   mailer.sendMail({
-    subject: "Still running.",
-    text: "Verifying that the process is still running",
+    subject: "I'm still looking out for you!",
+    text: "Hi, I'm just notifying you that I'm still looking for appointments for you. Make sure that you receive 2 emails a day because I might break and stop checking without notifying you. Contact alexedrodgers@gmail.com if you want to stop receiving emails. Thanks!",
   });
 });
 
 mailer.sendMail({
-  subject: 'Scheduler has started',
-  text: `Process started at: ${new Date()}`
+  subject: 'Consulate Watcher has started.',
+  text: `You've been added to the consulate watcher list. Process started at: ${new Date()}.`
 });
