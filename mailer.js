@@ -1,6 +1,5 @@
 const nodemailer = require("nodemailer");
-const emails = ["alexedrodgers@gmail.com", "sagemgrothee@gmail.com", "arellanolilly7702@gmail.com"];
-// const emails = ["alexedrodgers@gmail.com", "alex.e.rodgers@gmail.com", "aerodger@calpoly.edu"];
+const emails = ["testemail@gmail.com"];
 
 const isObjectEmpty = (obj) => {
   return obj && Object.keys(obj).length !== 0;
@@ -10,19 +9,19 @@ exports.sendMail = (options) => {
   transporter = nodemailer.createTransport({
     service: "hotmail",
     auth: {
-      user: "spainconsulatewatcher@outlook.com",
-      pass: "@>3Q/Xk`tvy(D-gs",
+      user: "<YOUR USERNAME>",
+      pass: "<YOUR PASSWORD>",
     },
   });
   if (options === undefined) {
     options = {
-      from: "Consulate <spainconsulatewatcher@outlook.com>",
+      from: "Consulate <OUTLOOK_EMAIL@outlook.com>",
       to: "alexedrodgers@gmail.com",
       subject: "Test",
       text: "Testing email service.",
     };
   } else {
-    options.from = "spainconsulatewatcher@outlook.com";
+    options.from = "OUTLOOK_EMAIL@outlook.com";
     options.to = emails;
   }
 

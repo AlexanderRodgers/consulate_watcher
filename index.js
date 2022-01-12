@@ -150,7 +150,7 @@ cron.schedule("0-59 * * * *", () => {
   })();
 });
 
-cron.schedule("0 8,20 * * *", () => {
+cron.schedule("0 4,16 * * *", () => {
   console.log("Mailer is running!");
   mailer.sendMail({
     subject: "I'm still looking out for you!",
